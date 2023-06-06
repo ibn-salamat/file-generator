@@ -1,2 +1,2 @@
 # file-generator
-go
+js
