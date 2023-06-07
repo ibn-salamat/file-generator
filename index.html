@@ -13,23 +13,23 @@
 </head>
 
 <body>
+    <h2>File Generator</h2>
+    <h3 style="display: none;">Sorry your browser does not support web worker</h1>
+        <br />
 
-    <h1 id="error-message" style="display: none;">Webworker is not defined</h1>
-    <br />
+        <div class="controls">
+            <input id="filename" placeholder="filename" />
 
-    <div class="controls">
-        <input id="filename" placeholder="filename" />
+            <input type="number" id="filesize" placeholder="MegaByte" />
 
-        <input type="number" id="filesize" placeholder="MegaByte" />
+            <button id="btn_generate">Generate a file</button>
+        </div>
 
-        <button id="btn_generate">Generate a file</button>
-    </div>
+        <div id="ready_files">
 
-    <div id="ready_files">
+        </div>
 
-    </div>
-
-    <script src="main.js"></script>
+        <script src="main.js"></script>
 </body>
 
 </html>

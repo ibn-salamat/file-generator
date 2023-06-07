@@ -5,7 +5,7 @@ const MB = KB * 1000
 const btnGenerateFile = document.querySelector("#btn_generate")
 const inputFileSize = document.querySelector("#filesize")
 const inputFileName = document.querySelector("#filename")
-const errorMessageBlock = document.querySelector("#error-message")
+const errorMessageBlock = document.querySelector("h3")
 const readyFilesBlock = document.querySelector("#ready_files")
 
 let myWorker = null
