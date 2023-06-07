@@ -6,6 +6,8 @@ const btnGenerateFile = document.querySelector("#btn_generate")
 const inputFileSize = document.querySelector("#filesize")
 const inputFileName = document.querySelector("#filename")
 
+let generatedFiles = [];
+
 function downloadBlob(blob, name) {
     if (
         window.navigator &&
@@ -36,9 +38,19 @@ function downloadBlob(blob, name) {
     }, 100);
 }
 
+function waiter(seconds) {
+    return new Promise((res) => {
+        setTimeout(() => {
+            res()
+        }, seconds * 1000)
+    })
+}
 
-function generiteFile() {
-    const fileSize = Number(inputFileSize.value)
+async function generiteFile() {
+    btnGenerateFile.disabled = true;
+    btnGenerateFile.innerText = "Generating file";
+
+    const fileSize = Number(inputFileSize.value) || 1
     const fileName = inputFileName.value || "file"
 
 
@@ -47,14 +59,18 @@ function generiteFile() {
         return
     }
 
+    const buffer = new ArrayBuffer(fileSize * MB);
+    const view = new Int32Array(buffer);
+    const blob = new Blob(view, { type: "" });
 
-    console.log(fileName, fileSize)
-    // const buffer = new ArrayBuffer(10 * size);
-    // const view = new Int32Array(buffer);
+    await waiter(3)
+
+    console.log(blob)
+
+    btnGenerateFile.disabled = false;
+    btnGenerateFile.innerText = "Generate a file";
+    // downloadBlob(, '1.jpg');
 }
 
 
 btnGenerateFile.addEventListener("click", generiteFile)
-
-
-// downloadBlob(new Blob(view, { type: "" }), '1.jpg');
