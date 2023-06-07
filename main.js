@@ -6,6 +6,12 @@ const btnGenerateFile = document.querySelector("#btn_generate")
 const inputFileSize = document.querySelector("#filesize")
 const inputFileName = document.querySelector("#filename")
 
+let myWorker = null
+
+if (window.Worker) {
+    myWorker = new Worker("worker.js");
+}
+
 let generatedFiles = [];
 
 function downloadBlob(blob, name) {
@@ -53,9 +59,17 @@ async function generiteFile() {
     const fileSize = Number(inputFileSize.value) || 1
     const fileName = inputFileName.value || "file"
 
-
     if (fileSize < 0.1 || isNaN(fileSize)) {
         alert("Too small, or incorrect size of file")
+        return
+    }
+
+    if (myWorker) {
+        myWorker.postMessage({
+            fileName,
+            fileSize
+        })
+
         return
     }
 
@@ -65,12 +79,22 @@ async function generiteFile() {
 
     await waiter(3)
 
-    console.log(blob)
-
     btnGenerateFile.disabled = false;
     btnGenerateFile.innerText = "Generate a file";
-    // downloadBlob(, '1.jpg');
+
 }
+
+if (myWorker) {
+    myWorker.onmessage = function ({ data }) {
+        if (data === "success") {
+            console.log(data)
+            btnGenerateFile.disabled = false;
+            btnGenerateFile.innerText = "Generate a file";
+        }
+    }
+}
+
+
 
 
 btnGenerateFile.addEventListener("click", generiteFile)
