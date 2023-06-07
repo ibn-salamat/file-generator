@@ -5,44 +5,55 @@ const MB = KB * 1000
 const btnGenerateFile = document.querySelector("#btn_generate")
 const inputFileSize = document.querySelector("#filesize")
 const inputFileName = document.querySelector("#filename")
+const errorMessageBlock = document.querySelector("#error-message")
+const readyFilesBlock = document.querySelector("#ready_files")
 
 let myWorker = null
 
 if (window.Worker) {
     myWorker = new Worker("worker.js");
+
+    myWorker.onmessage = function ({ data }) {
+        if (data.message === "success") {
+            const { fileName, blob, fileSize } = data
+
+            const fileData = window.URL.createObjectURL(blob);
+
+            generatedFiles.push({
+                id: Number(new Date()),
+                fileSize,
+                fileName,
+                fileData
+            })
+
+            const fileSizeInMb = fileSize / MB
+
+            btnGenerateFile.disabled = false;
+            btnGenerateFile.innerText = "Generate a file";
+
+            let content = '';
+
+            for (file of generatedFiles) {
+                content += `
+                    <a href="${fileData}" download="${fileName}">
+                        <span>${fileName}</span>
+                        <span>${fileSizeInMb} MegaByte</span>
+                    </a>
+                `
+            }
+
+            readyFilesBlock.innerHTML = content
+        }
+    }
+} else {
+    btnGenerateFile.disabled = true
+    inputFileSize.disabled = true
+    inputFileName.disabled = true
+    errorMessageBlock.style.display = "block"
+    alert("Turn on webworker or your browser dont support webworker")
 }
 
 let generatedFiles = [];
-
-function downloadBlob(blob, name) {
-    if (
-        window.navigator &&
-        window.navigator.msSaveOrOpenBlob
-    ) return window.navigator.msSaveOrOpenBlob(blob);
-
-    // For other browsers:
-    // Create a link pointing to the ObjectURL containing the blob.
-    const data = window.URL.createObjectURL(blob);
-
-    const link = document.createElement('a');
-    link.href = data;
-    link.download = name;
-
-    // this is necessary as link.click() does not work on the latest firefox
-    link.dispatchEvent(
-        new MouseEvent('click', {
-            bubbles: true,
-            cancelable: true,
-            view: window
-        })
-    );
-
-    setTimeout(() => {
-        // For Firefox it is necessary to delay revoking the ObjectURL
-        window.URL.revokeObjectURL(data);
-        link.remove();
-    }, 100);
-}
 
 function waiter(seconds) {
     return new Promise((res) => {
@@ -53,6 +64,8 @@ function waiter(seconds) {
 }
 
 async function generiteFile() {
+    if (!myWorker) return
+
     btnGenerateFile.disabled = true;
     btnGenerateFile.innerText = "Generating file";
 
@@ -64,37 +77,10 @@ async function generiteFile() {
         return
     }
 
-    if (myWorker) {
-        myWorker.postMessage({
-            fileName,
-            fileSize
-        })
-
-        return
-    }
-
-    const buffer = new ArrayBuffer(fileSize * MB);
-    const view = new Int32Array(buffer);
-    const blob = new Blob(view, { type: "" });
-
-    await waiter(3)
-
-    btnGenerateFile.disabled = false;
-    btnGenerateFile.innerText = "Generate a file";
-
+    myWorker.postMessage({
+        fileName,
+        fileSize: fileSize * MB
+    })
 }
-
-if (myWorker) {
-    myWorker.onmessage = function ({ data }) {
-        if (data === "success") {
-            console.log(data)
-            btnGenerateFile.disabled = false;
-            btnGenerateFile.innerText = "Generate a file";
-        }
-    }
-}
-
-
-
 
 btnGenerateFile.addEventListener("click", generiteFile)
