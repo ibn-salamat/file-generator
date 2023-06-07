@@ -6,16 +6,24 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>File generator</title>
+
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+
 </head>
 
 <body>
 
+    <h1 id="error-message" style="display: none;">Webworker is not defined</h1>
+    <br />
 
-    <input id="filename" placeholder="filename" />
+    <div class="controls">
+        <input id="filename" placeholder="filename" />
 
-    <input type="number" id="filesize" placeholder="MegaByte" />
+        <input type="number" id="filesize" placeholder="MegaByte" />
 
-    <button id="btn_generate">Generate a file</button>
+        <button id="btn_generate">Generate a file</button>
+    </div>
 
     <div id="ready_files">
 

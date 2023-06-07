@@ -37,7 +37,7 @@ if (window.Worker) {
                 content += `
                     <a href="${fileData}" download="${fileName}">
                         <span>${fileName}</span>
-                        <span>${fileSizeInMb} MegaByte</span>
+                        <span>(${fileSizeInMb}Mb)</span>
                     </a>
                 `
             }
